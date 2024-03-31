@@ -7,9 +7,9 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Command
 
 
-@dp.message_handler(Command("cancel"), state="*")
+@dp.message_handler(Command("cancel"), state=RecipeSearch.search)
 async def cancel_handler(message: types.Message, state: FSMContext):
-    await state.finish()  # Reset user state
+    await state.finish()
     await message.reply("Search cancelled.")
 
 
@@ -24,7 +24,7 @@ async def gpt(message: types.Message, state: FSMContext):
     user_search = message.text  # Get user's text
     url = f"https://www.themealdb.com/api/json/v1/1/search.php?s={user_search}"  # Url variable with user's search
     url_without_quotes = url.replace("'", "")  # Remove any quotes
-    responce = requests.get(url_without_quotes).json()  # Get response
+    responce = requests.get(url_without_quotes).json()
     # Get responce with for
     if responce is not None and "meals" in responce and isinstance(responce["meals"], list):
         for i in responce["meals"]:
@@ -34,7 +34,7 @@ async def gpt(message: types.Message, state: FSMContext):
             instruction = i["strInstructions"]
             youtube = i["strYoutube"]
             thumbnail = i["strMealThumb"]
-            ingredients_text = ""  # Initialize an empty string to store ingredients
+            ingredients_text = ""
 
             for meal in responce["meals"]:
                 for number in range(1, 20):
@@ -42,14 +42,12 @@ async def gpt(message: types.Message, state: FSMContext):
                     measure_key = f"strMeasure{number}"
                     ingredient_value = meal.get(ingredient_key)
                     measure_value = meal.get(measure_key)
-                    if ingredient_value:  # Check if the ingredient is not empty
-                        # If measure is provided, include it along with the ingredient
+                    if ingredient_value:
                         if measure_value:
                             ingredients_text += f"{measure_value} {ingredient_value}, "
                         else:
                             ingredients_text += f"{ingredient_value}, "
 
-            # Remove the trailing comma and space
             ingredients_text = ingredients_text.rstrip(", ")
 
             await message.reply(

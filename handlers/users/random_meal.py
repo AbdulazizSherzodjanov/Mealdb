@@ -4,14 +4,6 @@ import requests
 from loader import dp
 
 
-
-
-# Trying to get Ingredients without spaces
-# for ingredients in responce["meals"]:
-#     for ingredient in ingredients["strIngredient"]:
-#         print(ingredient)
-
-
 @dp.message_handler(commands=['random'])
 async def random_meal(message: types.Message):
    # Send request for getting responce
