@@ -13,7 +13,7 @@ async def cancel_handler(message: types.Message, state: FSMContext):
     await message.reply("Search cancelled.")
 
 
-@dp.message_handler(text="Search meal")
+@dp.message_handler(text="Search meal by name")
 async def start_handler(message: types.Message):
     await message.answer("Please, send me name of meal which you want 😊\n"
                          "If you want to cancel, type /cancel command.")
@@ -50,18 +50,28 @@ async def gpt(message: types.Message, state: FSMContext):
                             ingredients_text += f"{ingredient_value}, "
 
             ingredients_text = ingredients_text.rstrip(", ")
-
-            await message.reply(
-                f"Good\n"
+            search_reply = (f"Good\n"
                 f"<b>Name :</b> {name}\n\n"
                 f"<b>🖼 Image :</b><a href='{thumbnail}'> Click here</a>\n\n"
                 f"<b>Category :</b> {category}\n\n"
                 f"<b>Area :</b> {area}\n\n"
                 f"<b>Instruction :</b> {instruction}\n\n"
                 f"<b>Ingredients :</b> {ingredients_text}\n\n"
-                f"<b>Youtube :</b> {youtube}\n",
-                parse_mode=types.ParseMode.HTML
+                f"<b>Youtube :</b> {youtube}\n"
             )
-            await message.reply("If you want to cancel, type /cancel command.")
-    else:
-        await message.reply("Sorry,no results found 😔.")
+            max_length = 4096
+            message_count = 0
+
+            while search_reply and message_count < 5:
+                    chunk = search_reply[:max_length]
+                    search_reply = search_reply[max_length:]
+                    await message.reply(chunk, parse_mode=types.ParseMode.HTML)
+                    message_count += 1
+                
+            # After sending all chunks or reaching the message limit, provide the "cancel" instruction
+            if message_count == 5:
+                await message.reply("If you want to cancel, type /cancel command\.")
+                break
+
+        else:
+            await message.reply("Sorry,no results found 😔.")
