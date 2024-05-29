@@ -13,9 +13,10 @@ async def cancel_handler(message: types.Message, state: FSMContext):
     await message.reply("Search cancelled.")
 
 
-@dp.message_handler(commands=['search'])
+@dp.message_handler(text="Search meal")
 async def start_handler(message: types.Message):
-    await message.answer("Please, send me name of meal which you want 😊")
+    await message.answer("Please, send me name of meal which you want 😊\n"
+                         "If you want to cancel, type /cancel command.")
     await RecipeSearch.search.set()
 
 
@@ -63,4 +64,4 @@ async def gpt(message: types.Message, state: FSMContext):
             )
             await message.reply("If you want to cancel, type /cancel command.")
     else:
-        await message.reply("No results found 😔.")
+        await message.reply("Sorry,no results found 😔.")

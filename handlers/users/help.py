@@ -9,7 +9,6 @@ async def bot_help(message: types.Message):
     text = ("Commands : ",
             "/start - Restart the bot",
             "/help - Help",
-            "/random - Random recipe",
-            "/search - Search meal")
+            "🧑‍💻 Developer : @PyCoder_off1cial")
     
     await message.answer("\n".join(text))
